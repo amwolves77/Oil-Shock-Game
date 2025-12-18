@@ -1,3 +1,6 @@
+import { airtableFindByEmail } from './utils/airtable';
+import { airtableCreateScore } from './utils/airtable';
+
 
 import React, { useState, useEffect } from 'react';
 import { QUESTIONS, PENALTY_MS } from './constants';
@@ -20,6 +23,8 @@ import {
 } from 'lucide-react';
 
 const App: React.FC = () => {
+  
+
   const [gameState, setGameState] = useState<GameState>({
     status: 'idle',
     currentQuestionIndex: 0,
@@ -35,13 +40,7 @@ const App: React.FC = () => {
   const [showFeedback, setShowFeedback] = useState(false);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
-  useEffect(() => {
-    const stored = localStorage.getItem('oil_shock_leaderboard_data');
-    if (stored) {
-      setLeaderboard(JSON.parse(stored));
-    }
-  }, []);
-
+  
   const calculateScore = (correctCount: number, totalTimeMs: number) => {
     const REVENUE_PER_ANSWER = 1000;
     const COST_PER_SECOND = 10;
@@ -68,9 +67,16 @@ const App: React.FC = () => {
     setRegData({ nickname: '', email: '' });
   };
 
-  const handleBeginSimulation = (e: React.FormEvent) => {
+  const handleBeginSimulation = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!regData.nickname || !regData.email) return;
+
+    const alreadyPlayed = await airtableFindByEmail(regData.email);
+
+    if (alreadyPlayed) {
+      alert('You have already played.');
+      return;
+    }
 
     setGameState({
       status: 'playing',
@@ -83,6 +89,7 @@ const App: React.FC = () => {
     });
     setLastAnswerCorrect(null);
   };
+
 
   const saveToLeaderboard = (score: number, user: User) => {
     const newEntry: LeaderboardEntry = {
@@ -109,7 +116,7 @@ const App: React.FC = () => {
     setLastAnswerCorrect(isCorrect);
     setShowFeedback(true);
 
-    setTimeout(() => {
+    setTimeout(async () => {
         setShowFeedback(false);
         setLastAnswerCorrect(null);
 
@@ -127,8 +134,8 @@ const App: React.FC = () => {
               const finalScore = calculateScore(correctCount, totalTime);
               
               if (prev.user) {
-                saveToLeaderboard(finalScore, prev.user);
-              }
+                airtableCreateScore(prev.user.email, prev.user.nickname, finalScore);
+              }  
       
               return {
                 ...prev,
