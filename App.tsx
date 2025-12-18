@@ -1,6 +1,4 @@
-import { airtableFindByEmail } from './utils/airtable';
-import { airtableCreateScore } from './utils/airtable';
-
+import { airtableFindByEmail, airtableCreateScore, airtableTop10 } from './utils/airtable';
 
 import React, { useState, useEffect } from 'react';
 import { QUESTIONS, PENALTY_MS } from './constants';
@@ -39,6 +37,12 @@ const App: React.FC = () => {
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState<boolean | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  useEffect(() => {
+    airtableTop10()
+      .then(setLeaderboard)
+      .catch(() => {});
+  }, []);
+
 
   
   const calculateScore = (correctCount: number, totalTimeMs: number) => {
@@ -135,6 +139,8 @@ const App: React.FC = () => {
               
               if (prev.user) {
                 airtableCreateScore(prev.user.email, prev.user.nickname, finalScore);
+                airtableTop10().then(setLeaderboard);
+
               }  
       
               return {
@@ -306,7 +312,7 @@ const App: React.FC = () => {
 
         <div className="flex flex-col">
           <Leaderboard 
-            entries={leaderboard.slice(0, 10)} 
+            entries={leaderboard.slice(0, 5)} 
             currentUserScore={finalScore}
             currentNickname={gameState.user?.nickname}
           />
