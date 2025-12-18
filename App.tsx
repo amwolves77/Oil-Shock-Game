@@ -36,12 +36,17 @@ const App: React.FC = () => {
   const [regData, setRegData] = useState<User>({ nickname: '', email: '' });
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState<boolean | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [leaderboard, setLeaderboard] = useState<any[]>([]);
+  const [leaderboardLoading, setLeaderboardLoading] = useState(false);
+
+
   useEffect(() => {
+    setLeaderboardLoading(true);
     airtableTop10()
       .then(setLeaderboard)
-      .catch(() => {});
+      .finally(() => setLeaderboardLoading(false));
   }, []);
+
 
 
   
@@ -71,6 +76,8 @@ const App: React.FC = () => {
     setRegData({ nickname: '', email: '' });
   };
 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const handleBeginSimulation = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!regData.nickname || !regData.email) return;
@@ -78,9 +85,10 @@ const App: React.FC = () => {
     const alreadyPlayed = await airtableFindByEmail(regData.email);
 
     if (alreadyPlayed) {
-      alert('You have already played.');
+      setErrorMessage('You have already played. One attempt per email.');
       return;
     }
+
 
     setGameState({
       status: 'playing',
@@ -205,6 +213,12 @@ const App: React.FC = () => {
           <p className="text-slate-500 text-sm">Register your credentials for the leaderboard</p>
         </div>
 
+        {errorMessage && (
+          <div className="mb-4 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+            {errorMessage}
+          </div>
+        )}
+
         <form onSubmit={handleBeginSimulation} className="space-y-6">
           <div>
             <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Nickname</label>
@@ -217,7 +231,11 @@ const App: React.FC = () => {
                 placeholder="Ex: PetroMaster"
                 className="w-full bg-slate-950/50 border border-slate-700 rounded-lg py-3 pl-10 pr-4 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
                 value={regData.nickname}
-                onChange={e => setRegData({...regData, nickname: e.target.value})}
+                onChange={e => {
+                  setErrorMessage(null);
+                  setRegData({ ...regData, nickname: e.target.value });
+                }}
+
               />
             </div>
           </div>
@@ -232,7 +250,12 @@ const App: React.FC = () => {
                 placeholder="Ex: user@market.com"
                 className="w-full bg-slate-950/50 border border-slate-700 rounded-lg py-3 pl-10 pr-4 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all"
                 value={regData.email}
-                onChange={e => setRegData({...regData, email: e.target.value})}
+                onChange={e => {
+                  setErrorMessage(null);
+                  setRegData({ ...regData, email: e.target.value });
+                }}
+
+
               />
             </div>
             <p className="text-[10px] text-slate-600 mt-2 italic">* Email is only for backend verification and is never displayed publicly.</p>
@@ -311,11 +334,18 @@ const App: React.FC = () => {
         </div>
 
         <div className="flex flex-col">
-          <Leaderboard 
-            entries={leaderboard.slice(0, 5)} 
-            currentUserScore={finalScore}
-            currentNickname={gameState.user?.nickname}
-          />
+          {leaderboardLoading ? (
+            <div className="text-slate-500 text-sm italic">
+              Loading leaderboard…
+            </div>
+          ) : (
+            <Leaderboard 
+              entries={leaderboard.slice(0, 5)} 
+              currentUserScore={finalScore}
+              currentNickname={gameState.user?.nickname}
+            />
+          )}
+
         </div>
       </div>
     );
