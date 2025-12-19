@@ -45,7 +45,7 @@ export async function airtableCreateScore(email: string, nickname: string, score
   return true;
 }
 export async function airtableTop10() {
-  const res = await fetch("http://localhost:3001/api/leaderboard");
+  const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/leaderboard`);
 
   if (!res.ok) {
     throw new Error("Leaderboard API failed");
