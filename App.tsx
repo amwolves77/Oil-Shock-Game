@@ -9,7 +9,7 @@ import Leaderboard from './components/Leaderboard';
 import { 
   Play, 
   RotateCcw, 
-  Trophy, 
+  Fuel, 
   CheckCircle2, 
   XCircle, 
   TrendingUp, 
@@ -181,7 +181,7 @@ const App: React.FC = () => {
     <div className="text-center max-w-2xl px-6 animate-in fade-in zoom-in duration-500">
       <div className="mb-8 relative inline-block">
         <div className="absolute -inset-4 bg-cyan-500/20 blur-xl rounded-full"></div>
-        <Trophy size={64} className="text-cyan-400 relative z-10 mx-auto" />
+        <Fuel size={64} className="text-cyan-400 relative z-10 mx-auto" />
       </div>
       <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400 mb-6 tracking-tight">
         OIL SHOCK
@@ -189,7 +189,7 @@ const App: React.FC = () => {
       <p className="text-slate-400 text-lg md:text-xl mb-8 leading-relaxed">
         Market Volatility Alert: Oil has plummeted to <span className="text-emerald-400 font-bold">$50/bbl</span>. 
         <br />
-        Enter the simulation and secure your position on the global stage.
+        Test your intuition as the shock ripples through the global system.
       </p>
 
       <button
@@ -197,7 +197,7 @@ const App: React.FC = () => {
           className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-cyan-600 font-lg rounded-full hover:bg-cyan-50 hover:scale-105 hover:shadow-[0_0_30px_rgba(8,145,178,0.4)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 focus:ring-offset-slate-900"
       >
           <Play className="mr-2 fill-current" size={20} />
-          INITIATE TERMINAL
+          START GAME
       </button>
     </div>
   );
@@ -221,7 +221,7 @@ const App: React.FC = () => {
 
         <form onSubmit={handleBeginSimulation} className="space-y-6">
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Nickname</label>
+            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Username</label>
             <div className="relative">
               <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
               <input 
@@ -265,7 +265,7 @@ const App: React.FC = () => {
             type="submit"
             className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-emerald-900/20"
           >
-            START SIMULATION
+            START GAME
             <ChevronRight size={20} />
           </button>
         </form>
@@ -285,8 +285,8 @@ const App: React.FC = () => {
       <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8 px-6 py-12 animate-in fade-in duration-700">
         <div className="flex flex-col justify-center">
           <div className="mb-8">
-            <h2 className="text-4xl font-black text-white mb-2 tracking-tight">Market Settled.</h2>
-            <p className="text-slate-500">Your decisions have been audited by the algorithm.</p>
+            <h2 className="text-4xl font-black text-white mb-2 tracking-tight">Game Over.</h2>
+            <p className="text-slate-500">Your results are ready. See how you rank on the leaderboard.</p>
           </div>
 
           <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 mb-6 shadow-2xl relative overflow-hidden">
@@ -297,7 +297,7 @@ const App: React.FC = () => {
             )}
             
             <div className="mb-6">
-              <div className="text-sm text-slate-400 uppercase tracking-widest font-bold mb-1">Final Net Profit</div>
+              <div className="text-sm text-slate-400 uppercase tracking-widest font-bold mb-1">Final Score</div>
               <div className="text-7xl font-black text-rose-500 drop-shadow-[0_0_15px_rgba(244,63,94,0.3)] tabular-nums">
                   {finalScore.toLocaleString()}
               </div>
@@ -329,7 +329,7 @@ const App: React.FC = () => {
               className="w-full lg:w-max flex items-center justify-center px-10 py-4 font-bold text-slate-900 transition-all duration-200 bg-white rounded-full hover:bg-cyan-50 hover:scale-105"
           >
               <RotateCcw className="mr-2" size={18} />
-              Relaunch Simulation
+              Play Again
           </button>
         </div>
 
