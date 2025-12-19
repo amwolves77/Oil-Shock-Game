@@ -87,6 +87,43 @@ app.get("/api/check-email", async (req, res) => {
 });
 
 
+app.post("/api/submit-score", async (req, res) => {
+  try {
+    const baseId = process.env.AIRTABLE_BASE_ID!;
+    const table = process.env.AIRTABLE_TABLE_NAME!;
+    const token = process.env.AIRTABLE_TOKEN!;
+
+    const { email, nickname, score } = req.body || {};
+    if (!email || !nickname || typeof score !== "number") {
+      return res.status(400).json({ error: "invalid_payload" });
+    }
+
+    const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(
+      table
+    )}`;
+
+    const r = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        records: [
+          { fields: { Email: email, Nickname: nickname, Score: score } },
+        ],
+      }),
+    });
+
+    if (!r.ok) throw new Error("Airtable error");
+
+    res.json({ ok: true });
+  } catch {
+    res.status(500).json({ error: "submit_score_failed" });
+  }
+});
+
+
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 app.listen(PORT, () => {
   console.log(`API server running on http://localhost:${PORT}`);

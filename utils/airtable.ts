@@ -16,28 +16,24 @@ export async function airtableFindByEmail(email: string) {
 }
 
 
-export async function airtableCreateScore(email: string, nickname: string, score: number) {
-  const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE_NAME)}`;
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      records: [
-        { fields: { Email: email, Nickname: nickname, Score: score } }
-      ]
-    }),
+export async function airtableCreateScore(
+  email: string,
+  nickname: string,
+  score: number
+) {
+  const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/submit-score`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, nickname, score }),
   });
 
   if (!res.ok) {
-    throw new Error('Airtable create failed');
+    throw new Error("Score submit failed");
   }
 
   return true;
 }
+
 export async function airtableTop10() {
   const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/leaderboard`);
 
