@@ -59,6 +59,33 @@ app.get("/api/leaderboard", async (_req, res) => {
 });
 
 
+app.get("/api/check-email", async (req, res) => {
+  try {
+    const baseId = process.env.AIRTABLE_BASE_ID!;
+    const table = process.env.AIRTABLE_TABLE_NAME!;
+    const token = process.env.AIRTABLE_TOKEN!;
+
+    const email = String(req.query.email || "").trim();
+    if (!email) return res.status(400).json({ error: "missing_email" });
+
+    const formula = `{Email}="${email}"`;
+    const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(
+      table
+    )}?filterByFormula=${encodeURIComponent(formula)}&maxRecords=1`;
+
+    const r = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!r.ok) throw new Error("Airtable error");
+
+    const data = await r.json();
+    res.json({ exists: (data.records || []).length > 0 });
+  } catch {
+    res.status(500).json({ error: "check_email_failed" });
+  }
+});
+
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 app.listen(PORT, () => {

@@ -3,24 +3,18 @@ const TABLE_NAME = import.meta.env.VITE_AIRTABLE_TABLE_NAME;
 const TOKEN = import.meta.env.VITE_AIRTABLE_TOKEN;
 
 export async function airtableFindByEmail(email: string) {
-  const formula = `{Email}="${email}"`;
-  const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(
-    TABLE_NAME
-  )}?filterByFormula=${encodeURIComponent(formula)}&maxRecords=1`;
-
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${TOKEN}`,
-    },
-  });
+  const res = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/api/check-email?email=${encodeURIComponent(email)}`
+  );
 
   if (!res.ok) {
-    throw new Error('Airtable lookup failed');
+    throw new Error("Email lookup failed");
   }
 
   const data = await res.json();
-  return data.records.length > 0;
+  return data.exists === true;
 }
+
 
 export async function airtableCreateScore(email: string, nickname: string, score: number) {
   const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE_NAME)}`;
